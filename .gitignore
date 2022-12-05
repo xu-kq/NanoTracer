@@ -1,0 +1,5 @@
+# Clion Related Files
+/.idea
+
+# CMake Outputs Files
+/build
