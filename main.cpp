@@ -1,17 +1,31 @@
 #include <iostream>
 #include "stb_image/stb_image_write.h"
 #include "Ray/Ray.h"
+#include <vector>
+namespace Tracer {
+bool hit_sphere(const Vec3 &center, float radius, const Ray &r) {
+  Vec3 oc = r.origin() - center;
+  float a = dot(r.direction(), r.direction());
+  float b = 2.f * dot(oc, r.direction());
+  float c = dot(oc, oc) - radius * radius;
+  float det = b * b - 4 * a * c;
+  return det > 0;
+}
 
-Tracer::Vec3 color(const Tracer::Ray &r) {
-  using Tracer::Vec3, Tracer::Ray;
+Vec3 color(const Ray &r) {
+  if (hit_sphere(Vec3(0, 0, -1), 0.5, r)) {
+	return {1., 0., 0.};
+  }
   Vec3 u_dir = normalize(r.direction());
   float t = 0.5f * (u_dir.y() + 1.f);
   return (1.f - t) * Vec3{1.f, 1.f, 1.f} + t * Vec3{0.5, 0.7, 1.0};
 }
+}
 
 int main() {
-  constexpr int width = 200;
-  constexpr int height = 100;
+  constexpr int width = 800;
+  constexpr int height = 400;
+
   Tracer::Vec3 lower_left_corner{-2., -1., -1.};
   Tracer::Vec3 horizontal{4., 0., 0.};
   Tracer::Vec3 vertical{0., 2., 0.};
@@ -19,7 +33,7 @@ int main() {
 
   constexpr int comp = 4;
   std::string filename = "image.png";
-  std::array<char, width * height * comp> data{};
+  std::vector<char> data(width * height * comp);
   // Visualization for Y Coordinate
   for (int j = 0; j < height; ++j) {
 	for (int i = 0; i < width; ++i) {
@@ -27,7 +41,7 @@ int main() {
 	  float v = static_cast<float>(j) / height;
 
 	  Tracer::Ray ray{origin, lower_left_corner + u * horizontal + v * vertical};
-	  Tracer::Vec3 col = color(ray);
+	  Tracer::Vec3 col = Tracer::color(ray);
 
 	  int ir = static_cast<int>(255.99 * col[0]);
 	  int ig = static_cast<int>(255.99 * col[1]);

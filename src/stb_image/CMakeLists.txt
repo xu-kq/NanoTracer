@@ -8,4 +8,3 @@ add_library(stb_image STATIC)
 aux_source_directory(. srcs)
 target_sources(stb_image PRIVATE ${srcs})
 target_include_directories(stb_image PRIVATE ${PROJECT_SOURCE_DIR}/include)
-

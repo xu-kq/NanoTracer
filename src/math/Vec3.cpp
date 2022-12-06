@@ -59,7 +59,7 @@ Vec3 operator/(const Vec3 &lhs, float rhs) { return {lhs[0] / rhs, lhs[1] / rhs,
 Vec3 operator*(float lhs, const Vec3 &rhs) { return rhs * lhs; }
 
 [[maybe_unused]] float dot(const Vec3 &lhs, const Vec3 &rhs) {
-  return lhs[0] * rhs[0] + lhs[1] * rhs[0] + lhs[2] * rhs[2];
+  return lhs[0] * rhs[0] + lhs[1] * rhs[1] + lhs[2] * rhs[2];
 }
 [[maybe_unused]] Vec3 cross(const Vec3 &lhs, const Vec3 &rhs) {
   return {
