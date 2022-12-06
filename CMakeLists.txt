@@ -27,12 +27,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # Main Executable
 add_executable(tracer main.cpp)
 
-add_subdirectory(
-        src
-        include
-)
+add_subdirectory(src bin)
+
 target_include_directories(tracer PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(tracer
         PRIVATE
+        Vec3
         stb_image
         )
