@@ -5,13 +5,13 @@
 #include <iostream>
 #include <vector>
 
-#include <stb_image/stb_image_write.h>
 #include <Ray/Ray.h>
-#include <Shape/ShapeList.h>
+#include <Shape/World.h>
+#include <stb_image/stb_image_write.h>
 
 namespace Tracer {
 
-Vec3 color(const Ray &r, const ShapeList &world) {
+Vec3 color(const Ray &r, const World &world) {
   if (Intersection inter = world.Intersect(r); inter) {
 	Vec3 N = inter.normal;
 	return 0.5f * (N + Vec3{1, 1, 1});
@@ -38,7 +38,7 @@ int main() {
   std::string filename = "image.png";
   std::vector<char> data(width * height * comp);
 
-  Tracer::ShapeList world;
+  Tracer::World world;
   world.push(std::make_shared<Tracer::Sphere>(Tracer::Vec3{0,0,-1}, 0.5));
   world.push(std::make_shared<Tracer::Sphere>(Tracer::Vec3{0,-100.5,-1}, 100));
 

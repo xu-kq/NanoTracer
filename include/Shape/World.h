@@ -8,10 +8,10 @@
 
 namespace Tracer {
 
-class ShapeList : public Sphere {
+class World : public Sphere {
 public:
-  ShapeList() = default;
-  [[maybe_unused]] explicit ShapeList(const std::vector<std::shared_ptr<Sphere>> &spheres) : spheres{spheres} {}
+  World() = default;
+  [[maybe_unused]] explicit World(const std::vector<std::shared_ptr<Sphere>> &spheres) : spheres{spheres} {}
 
   [[nodiscard]] Intersection Intersect(const Ray &ray) const override;
   void push(std::shared_ptr<Sphere> ps) { spheres.push_back(ps); }
