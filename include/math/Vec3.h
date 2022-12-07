@@ -7,6 +7,7 @@
 #include <iostream>
 
 namespace Tracer {
+
 class Vec3 {
 public:
   Vec3() = default;

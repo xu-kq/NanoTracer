@@ -34,4 +34,14 @@ target_link_libraries(tracer
         PRIVATE
         Vec3
         stb_image
+        Shape
+        )
+
+add_executable(test_sphereList sphereList.cpp)
+target_include_directories(test_sphereList PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(test_sphereList
+        PRIVATE
+        Vec3
+        stb_image
+        Shape
         )

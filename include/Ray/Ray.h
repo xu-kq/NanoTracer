@@ -2,7 +2,8 @@
 // Created by xukq on 22/12/06.
 //
 #pragma once
-#include "math/Vec3.h"
+#include <math/Vec3.h>
+
 namespace Tracer {
 
 class Ray {

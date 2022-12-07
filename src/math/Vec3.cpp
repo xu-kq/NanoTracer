@@ -1,9 +1,10 @@
 //
 // Created by xukq on 22/12/05.
 //
-#include "math/Vec3.h"
+#include <math/Vec3.h>
 
 namespace Tracer {
+
 std::istream &operator>>(std::istream &is, Vec3 &v) {
   is >> v.data[0] >> v.data[1] >> v.data[2];
   return is;
