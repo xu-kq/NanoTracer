@@ -34,4 +34,5 @@ target_link_libraries(tracer
         PRIVATE
         stb_image
         Shape
+        utility
         )

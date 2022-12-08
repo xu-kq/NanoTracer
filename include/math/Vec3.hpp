@@ -11,7 +11,7 @@ namespace Tracer {
 template<typename T>
 class Vec3 {
 public:
-  Vec3() = default;
+  Vec3() : data{} {};
   Vec3(const Vec3&) = default;
   Vec3(T e0, T e1, T e2) : data{e0, e1, e2} {}
 
@@ -46,12 +46,12 @@ private:
 };
 
 // type alias for Vec3<T>
-using Vec3i = Vec3<int>;
+using Vec3i [[maybe_unused]] = Vec3<int>;
 using Color3 = Vec3<int>;
 using Vec3d = Vec3<double>;
 
 // Implementation of member function: self arithmetic operator
-template<typename T> auto Vec3<T>::operator+=(const Vec3 &rhs) -> Vec3 & {
+template<typename T> auto Vec3<T>::operator+=(const Vec3 &rhs)  -> Vec3 &  {
   this->data[0] += rhs[0];
   this->data[1] += rhs[1];
   this->data[2] += rhs[2];
