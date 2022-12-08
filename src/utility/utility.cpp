@@ -40,5 +40,14 @@ Vec3d random_vec3d_in_unit_square(double min, double max) {
   } while(ret.squared_length() > 1);
   return ret;
 }
-
+Vec3d random_vec3d_on_unit_square() {
+  return random_vec3d_in_unit_square().normalized();
+}
+Vec3d random_vec3d_in_hemisphere(const Vec3d &normal) {
+  Vec3d in_unit_sphere = random_vec3d_in_unit_square();
+  if(dot(in_unit_sphere, normal) > 0.)
+	return in_unit_sphere;
+  else
+	return -in_unit_sphere;
+}
 } // Tracer

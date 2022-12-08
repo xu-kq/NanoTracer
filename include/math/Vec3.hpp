@@ -12,16 +12,16 @@ template<typename T>
 class Vec3 {
 public:
   Vec3() : data{} {};
-  Vec3(const Vec3&) = default;
+  Vec3(const Vec3 &) = default;
   Vec3(T e0, T e1, T e2) : data{e0, e1, e2} {}
 
   template<typename R>
   explicit operator class Vec3<R>() {
-  	return {
-		static_cast<R>(data[0]),
-		static_cast<R>(data[1]),
-		static_cast<R>(data[2])
-	  };
+    return {
+        static_cast<R>(data[0]),
+        static_cast<R>(data[1]),
+        static_cast<R>(data[2])
+    };
   }
 
   [[nodiscard]] T x() const { return data[0]; }
@@ -41,6 +41,12 @@ public:
   Vec3 &operator*=(T rhs);
   Vec3 &operator/=(T rhs);
 
+  [[nodiscard]] bool near_zero() const {
+    constexpr double eps = 1e-15;
+    return std::abs(data[0]) < eps
+        && std::abs(data[1]) < eps
+        && std::abs(data[2]) < eps;
+  }
 private:
   std::array<T, 3> data;
 };
@@ -51,7 +57,7 @@ using Color3 = Vec3<int>;
 using Vec3d = Vec3<double>;
 
 // Implementation of member function: self arithmetic operator
-template<typename T> auto Vec3<T>::operator+=(const Vec3 &rhs)  -> Vec3 &  {
+template<typename T> auto Vec3<T>::operator+=(const Vec3 &rhs) -> Vec3 & {
   this->data[0] += rhs[0];
   this->data[1] += rhs[1];
   this->data[2] += rhs[2];
@@ -63,13 +69,13 @@ template<typename T> auto Vec3<T>::operator-=(const Vec3 &rhs) -> Vec3 & {
   this->data[2] -= rhs[2];
   return *this;
 }
-template<typename T> auto Vec3<T>::operator*=(const T rhs) -> Vec3 &  {
+template<typename T> auto Vec3<T>::operator*=(const T rhs) -> Vec3 & {
   this->data[0] *= rhs;
   this->data[1] *= rhs;
   this->data[2] *= rhs;
   return *this;
 }
-template<typename T> auto Vec3<T>::operator/=(const T rhs) -> Vec3 &  {
+template<typename T> auto Vec3<T>::operator/=(const T rhs) -> Vec3 & {
   this->data[0] /= rhs;
   this->data[1] /= rhs;
   this->data[2] /= rhs;
@@ -104,9 +110,9 @@ template<typename T> auto dot(const Vec3<T> &lhs, const Vec3<T> &rhs) -> T {
 }
 template<typename T> [[maybe_unused]] auto cross(const Vec3<T> &lhs, const Vec3<T> &rhs) -> Vec3<T> {
   return {
-	  lhs[1] * rhs[2] - lhs[2] * rhs[1],
-	  lhs[2] * rhs[0] - lhs[0] * rhs[2],
-	  lhs[0] * rhs[1] - lhs[1] * rhs[0]
+      lhs[1] * rhs[2] - lhs[2] * rhs[1],
+      lhs[2] * rhs[0] - lhs[0] * rhs[2],
+      lhs[0] * rhs[1] - lhs[1] * rhs[0]
   };
 }
 template<typename T> auto normalize(const Vec3<T> &v) -> Vec3<T> { return Vec3<T>(v).normalized(); }

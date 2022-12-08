@@ -3,20 +3,20 @@
 //
 
 #pragma once
+#include "Shape.h"
 #include <vector>
-#include "Sphere.h"
 
 namespace Tracer {
 
-class World : public Sphere {
+class World : public Shape {
 public:
   World() = default;
-  [[maybe_unused]] explicit World(const std::vector<std::shared_ptr<Sphere>> &spheres) : spheres{spheres} {}
+  [[maybe_unused]] explicit World(const std::vector<std::shared_ptr<Shape>> &spheres) : spheres{spheres} {}
 
   [[nodiscard]] Intersection Intersect(const Ray &ray) const override;
-  void push(std::shared_ptr<Sphere> ps) { spheres.push_back(ps); }
+  void push(std::shared_ptr<Shape> ps) { spheres.push_back(ps); }
 private:
-  std::vector<std::shared_ptr<Sphere>> spheres;
+  std::vector<std::shared_ptr<Shape>> spheres;
 };
 
 } // Tracer
