@@ -2,22 +2,22 @@
 // Created by xukq on 22/12/06.
 //
 #pragma once
-#include <math/Vec3.h>
+#include <math/Vec3.hpp>
 
 namespace Tracer {
 
 class Ray {
 public:
-  Ray() {}
-  Ray(const Vec3 &orig, const Vec3 &dir, const float t = 0.f) : org{orig}, dir{dir}, t{t} {}
+  Ray() = default;
+  Ray(const Vec3d &orig, const Vec3d &dir, const float t = 0.f) : org{orig}, dir{dir}, t{t} {}
 
-  [[nodiscard]] const Vec3 &origin() const { return org; }
-  [[nodiscard]] const Vec3 &direction() const { return dir; }
-  Vec3 operator()(float t) const { return org + t * dir; }
+  [[nodiscard]] const Vec3d &origin() const { return org; }
+  [[nodiscard]] const Vec3d &direction() const { return dir; }
+  Vec3d operator()(double coef) const { return org + coef * dir; }
 private:
-  Vec3 org;
-  Vec3 dir;
-  float t;
+  Vec3d org;
+  Vec3d dir;
+  double t;
 };
 
 } // Tracer

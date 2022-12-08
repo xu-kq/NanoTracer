@@ -4,4 +4,5 @@
 #include <Ray/Ray.h>
 
 namespace Tracer {
+
 } // Tracer

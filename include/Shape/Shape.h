@@ -9,19 +9,21 @@
 
 namespace Tracer {
 struct Intersection {
-  Intersection() : happened{false}, coords{}, normal{}, distance{std::numeric_limits<float>::max()} {}
+public:
+  Intersection() : happened{false}, coords{}, normal{}, distance{std::numeric_limits<float>::max()} {  }
+
   explicit operator bool() const { return happened; }
   bool operator<(const Intersection &rhs) const { return distance < rhs.distance; }
 
   bool happened;
-  [[maybe_unused]] float distance;
-  [[maybe_unused]] Vec3 coords;
-  [[maybe_unused]] Vec3 normal;
+  double distance;
+  Vec3d coords;
+  Vec3d normal;
 };
 
 class Shape {
 public:
-  [[maybe_unused, nodiscard]] virtual Intersection Intersect(const Ray &ray) const = 0;
+  [[nodiscard]] virtual Intersection Intersect(const Ray &ray) const = 0;
 };
 
 } // Tracer

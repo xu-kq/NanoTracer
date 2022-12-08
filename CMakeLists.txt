@@ -5,7 +5,7 @@ project(PathTracer LANGUAGES CXX
         HOMEPAGE_URL "https://github.com/xu-kq"
         )
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -32,7 +32,6 @@ add_subdirectory(src bin)
 target_include_directories(tracer PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(tracer
         PRIVATE
-        Vec3
         stb_image
         Shape
         )

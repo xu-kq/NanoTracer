@@ -10,12 +10,12 @@ namespace Tracer {
 class Sphere : public Shape {
 public:
   Sphere() = default;
-  Sphere(const Vec3& center, float radius) : center{center}, radius{radius} {}
+  Sphere(const Vec3d &center, float radius) : center{center}, radius{radius} {}
 
   [[nodiscard]] Intersection Intersect(const Ray &ray) const override;
 private:
-	Vec3 center;
-	float radius;
+  Vec3d center{};
+  double radius{};
 };
 
 } // Tracer
