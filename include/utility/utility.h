@@ -35,11 +35,19 @@ namespace Tracer {
 constexpr long double pi{3.14159265358979329l};
 
 // utility function
-inline Color3 scale_to_color(const Vec3<double> &pixel_color) {
+inline Color3 gamma_correction(const Vec3<double> &pixel_color) {
+  auto r = pixel_color.x();
+  auto g = pixel_color.y();
+  auto b = pixel_color.z();
+
+  // gamma 2
+  r = std::sqrt(r);
+  g = std::sqrt(g);
+  b = std::sqrt(b);
   return {
-	  static_cast<int>(255.999 * pixel_color[0]),
-	  static_cast<int>(255.999 * pixel_color[1]),
-	  static_cast<int>(255.999 * pixel_color[2])
+	  static_cast<int>(256 * std::clamp(r, 0., 0.999)),
+	  static_cast<int>(256 * std::clamp(g, 0., 0.999)),
+	  static_cast<int>(256 * std::clamp(b, 0., 0.999))
   };
 }
 

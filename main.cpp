@@ -11,7 +11,7 @@ Vec3d cast_ray(const Ray &r, const World &world, int depth) {
 	return {0, 0, 0};
   }
   if (Intersection inter = world.Intersect(r); inter) {
-	Vec3d target = inter.coords + inter.normal + random_vec3d_in_unit_square();
+	Vec3d target = inter.coords + inter.normal + random_vec3d_in_unit_square().normalized();
 	return 0.5 * cast_ray({inter.coords, target - inter.coords}, world, depth - 1);
   } else {
 	Vec3d u_dir = normalize(r.direction());
@@ -31,7 +31,7 @@ int main() {
   [[maybe_unused]] constexpr double aspect_ratio = static_cast<double>(width) / height;
   constexpr double focal_length = 600;
 
-  std::string filename = "anti-aliasing.png";
+  std::string filename = "Gamma_Corrected.png";
   std::vector<char> data(width * width * channel);
 
 
@@ -45,7 +45,7 @@ int main() {
 
   // Render loop
   constexpr int max_depth = 50;
-  constexpr int samples_per_pixel = 100;
+  constexpr int samples_per_pixel = 10;
   for (int j = 0; j < height; ++j) {
 	for (int i = 0; i < width; ++i) {
 	  Tracer::Color3 col;
@@ -53,7 +53,7 @@ int main() {
 		double u = (i + Tracer::generate_random_double()) / width;
 		double v = (j + Tracer::generate_random_double()) / height;
 		Tracer::Ray ray = camera.gen_ray(u, v);
-		col += scale_to_color(Tracer::cast_ray(ray, world, max_depth));
+		col += gamma_correction(Tracer::cast_ray(ray, world, max_depth));
 	  }
 	  col /= samples_per_pixel;
 
