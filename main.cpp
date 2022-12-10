@@ -34,15 +34,17 @@ int main() {
   [[maybe_unused]] constexpr double aspect_ratio = static_cast<double>(width) / height;
   constexpr double focal_length = 600;
 
-  std::string filename = "Material.png";
+  std::string filename = "Fuzzy_Metal.png";
   std::vector<char> data(width * width * channel);
 
 
   // Material
   auto m_gouraud = std::make_shared<Tracer::Lambertian>(Tracer::Vec3d{0.8, 0.8, 0.0});
   auto m_center = std::make_shared<Tracer::Lambertian>(Tracer::Vec3d{0.7, 0.3, 0.3});
-  auto m_left = std::make_shared<Tracer::Metal>(Tracer::Vec3d{0.8, 0.8, 0.8});
-  auto m_right = std::make_shared<Tracer::Metal>(Tracer::Vec3d{0.8, 0.6, 0.2});
+  auto m_left = std::make_shared<Tracer::Metal>(Tracer::Vec3d{0.8, 0.8, 0.8}, 0.3);
+  // TODO: There is a bug with adding fuzzy factor. The Sphere at right hand will
+  // have a dark edge.
+  auto m_right = std::make_shared<Tracer::Metal>(Tracer::Vec3d{0.8, 0.6, 0.2}, 1.0);
 
 
   // World

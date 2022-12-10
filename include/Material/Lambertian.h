@@ -16,6 +16,7 @@ public:
   [[nodiscard]] std::optional<std::tuple<Vec3d, Ray>> scatter(const Ray &ri, const Intersection &inter) const override {
     auto scatter_direction = inter.normal + random_vec3d_on_unit_square();
 
+    // discarding all near grazing angle, and return a normal direction.
     if (scatter_direction.near_zero()) {
       scatter_direction = inter.normal;
     }

@@ -42,7 +42,7 @@ public:
   Vec3 &operator/=(T rhs);
 
   [[nodiscard]] bool near_zero() const {
-    constexpr double eps = 1e-15;
+    constexpr double eps = 1e-5;
     return std::abs(data[0]) < eps
         && std::abs(data[1]) < eps
         && std::abs(data[2]) < eps;

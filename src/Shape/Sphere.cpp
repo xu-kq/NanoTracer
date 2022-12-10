@@ -13,14 +13,15 @@ Intersection Sphere::Intersect(const Ray &ray) const {
   double c = dot(oc, oc) - radius * radius;
 
   if(double det = b * b - 4 * a * c; det > 0) {
-	if(double x1 = ((-b - std::sqrt(det)) / (2. * a)); x1 > 1e-10) {
+    constexpr double tol = 1e-10;
+	if(double x1 = ((-b - std::sqrt(det)) / (2. * a)); x1 > tol) {
 	  inter.happened = true;
 	  inter.distance = x1;
 	  inter.coords = ray(x1);
 	  inter.normal = (inter.coords - center) / radius;
 	  inter.p_mat = p_mat;
 	}
-	else if(double x2 = ((-b + std::sqrt(det)) / (2.f * a)); x2 > 1e-10) {
+	else if(double x2 = ((-b + std::sqrt(det)) / (2.f * a)); x2 > tol) {
 	  inter.happened = true;
 	  inter.distance = x2;
 	  inter.coords = ray(x2);
