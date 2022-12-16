@@ -36,7 +36,7 @@ int main() {
   [[maybe_unused]] constexpr double aspect_ratio = static_cast<double>(width) / height;
   constexpr double focal_length = 600;
 
-  std::string filename = "10fov.png";
+  std::string filename = "image.png";
   std::vector<char> data(width * width * channel);
 
 
@@ -56,10 +56,15 @@ int main() {
   world.push(std::make_shared<Tracer::Sphere>(Tracer::Vec3d{1, 0, -1}, 0.5, m_right));
 
   // Camera
+  Tracer::Vec3d lookfrom{3,3,2};
+  Tracer::Vec3d lookat{0,0,-1};
+  Tracer::Vec3d vup{0,1,0};
+  auto dist_to_focus = (lookfrom - lookat).length();
+  auto aperture = 2.0;
   double fov = 20.;
   fov = Tracer::deg2rad(fov);
   Tracer::Camera
-      camera{{-2, 2, 1}, {0, 0, -1}, {0, 1, 0}, fov, aspect_ratio};
+      camera{lookfrom, lookat, vup, fov, aspect_ratio, aperture, dist_to_focus};
 
   // Render loop
   constexpr int max_depth = 50;
