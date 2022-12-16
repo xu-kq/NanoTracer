@@ -20,6 +20,9 @@ Intersection Sphere::Intersect(const Ray &ray) const {
 	  inter.coords = ray(x1);
 	  inter.normal = (inter.coords - center) / radius;
 	  inter.p_mat = p_mat;
+
+    Vec3d outward_normal = (inter.coords - center) / radius;
+    inter.set_face_normal(ray, outward_normal);
 	}
 	else if(double x2 = ((-b + std::sqrt(det)) / (2.f * a)); x2 > tol) {
 	  inter.happened = true;
@@ -27,6 +30,9 @@ Intersection Sphere::Intersect(const Ray &ray) const {
 	  inter.coords = ray(x2);
 	  inter.normal = (inter.coords - center) / radius;
 	  inter.p_mat = p_mat;
+
+    Vec3d outward_normal = (inter.coords - center) / radius;
+    inter.set_face_normal(ray, outward_normal);
 	}
   }
 	return inter;

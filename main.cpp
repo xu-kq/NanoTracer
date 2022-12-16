@@ -10,12 +10,14 @@ Vec3d cast_ray(const Ray &r, const World &world, int depth) {
   if (depth <= 0) {
     return {0, 0, 0};
   }
+
   if (Intersection inter = world.Intersect(r); inter) {
     if (auto ret = inter.p_mat->scatter(r, inter); ret) {
       auto [attenuation, scattered] = ret.value();
       return attenuation * cast_ray(scattered, world, depth - 1);
+    } else {
+      return {0, 0, 0};
     }
-    return {0, 0, 0};
   } else {
     Vec3d u_dir = normalize(r.direction());
     double t = 0.5 * (u_dir.y() + 1.);
@@ -34,29 +36,30 @@ int main() {
   [[maybe_unused]] constexpr double aspect_ratio = static_cast<double>(width) / height;
   constexpr double focal_length = 600;
 
-  std::string filename = "Fuzzy_Metal.png";
+  std::string filename = "10fov.png";
   std::vector<char> data(width * width * channel);
 
 
   // Material
   auto m_gouraud = std::make_shared<Tracer::Lambertian>(Tracer::Vec3d{0.8, 0.8, 0.0});
-  auto m_center = std::make_shared<Tracer::Lambertian>(Tracer::Vec3d{0.7, 0.3, 0.3});
-  auto m_left = std::make_shared<Tracer::Metal>(Tracer::Vec3d{0.8, 0.8, 0.8}, 0.3);
-  // TODO: There is a bug with adding fuzzy factor. The Sphere at right hand will
-  // have a dark edge.
-  auto m_right = std::make_shared<Tracer::Metal>(Tracer::Vec3d{0.8, 0.6, 0.2}, 1.0);
-
+  auto m_center = std::make_shared<Tracer::Lambertian>(Tracer::Vec3d{0.1, 0.2, 0.5});
+  auto m_left = std::make_shared<Tracer::Dielectric>(1.5);
+  auto m_right = std::make_shared<Tracer::Metal>(Tracer::Vec3d{0.8, 0.6, 0.2}, 0.0);
 
   // World
   Tracer::World world;
 
-  world.push(std::make_shared<Tracer::Sphere>(Tracer::Vec3d{0, -100.5, -1}, 100, m_gouraud));
+  world.push(std::make_shared<Tracer::Sphere>(Tracer::Vec3d{0., -100.5, -1}, 100., m_gouraud));
   world.push(std::make_shared<Tracer::Sphere>(Tracer::Vec3d{0, 0, -1}, 0.5, m_center));
   world.push(std::make_shared<Tracer::Sphere>(Tracer::Vec3d{-1, 0, -1}, 0.5, m_left));
+  world.push(std::make_shared<Tracer::Sphere>(Tracer::Vec3d{-1, 0, -1}, -0.45, m_left));
   world.push(std::make_shared<Tracer::Sphere>(Tracer::Vec3d{1, 0, -1}, 0.5, m_right));
 
   // Camera
-  Tracer::Camera camera{width, height, focal_length};
+  double fov = 20.;
+  fov = Tracer::deg2rad(fov);
+  Tracer::Camera
+      camera{{-2, 2, 1}, {0, 0, -1}, {0, 1, 0}, fov, aspect_ratio};
 
   // Render loop
   constexpr int max_depth = 50;

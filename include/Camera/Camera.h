@@ -9,26 +9,25 @@ namespace Tracer {
 
 class Camera {
 public:
-  Camera(const double width = 32.0 / 9.0, const double height = 2.0, const double focal_length = 1.0) :
-      viewport_width{width},
-      viewport_height{height},
-      aspect_ratio{width / height},
-      focal_length{focal_length},
-      origin{0, 0, 0},
-      horizontal{viewport_width, 0., 0.},
-      vertical{0., viewport_height, 0.} {
-    lower_left_corner = origin - horizontal / 2. - vertical / 2. - Vec3d{0, 0, focal_length};
+  Camera(Vec3d lookfrom, Vec3d lookat, Vec3d vup, const double vfov, const double aspect_ratio)
+      : origin{lookfrom} {
+    constexpr double focal_length = 1.0;
+    double viewport_height = 2 * focal_length * std::tan(vfov / 2);
+    double viewport_width = aspect_ratio * viewport_height;
+
+    auto w = normalize(lookfrom - lookat);
+    auto u = normalize(cross(vup, w));
+    auto v = cross(w, u);
+
+    horizontal = viewport_width * u;
+    vertical = viewport_height * v;
+    lower_left_corner = origin - horizontal / 2. - vertical / 2. - w;
   }
 
   Ray gen_ray(double u, double v) const {
     return {origin, lower_left_corner + u * horizontal + v * vertical - origin};
   }
 private:
-  double aspect_ratio;
-  double viewport_width;
-  double viewport_height;
-  double focal_length;
-
   Vec3d origin;
   Vec3d lower_left_corner;
   Vec3d horizontal;

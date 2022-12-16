@@ -22,6 +22,7 @@
 
 #include <Camera/Camera.h>
 #include <stb_image/stb_image_write.h>
+#include <Material/Dielectric.h>
 #include <Material/Lambertian.h>
 #include <Material/Metal.h>
 #include <Ray/Ray.h>
