@@ -3,72 +3,42 @@
 //
 
 #include <utility/utility.h>
-
 namespace Tracer {
-
-Vec3d cast_ray(const Ray &r, const World &world, int depth) {
-  if (depth <= 0) {
-    return {0, 0, 0};
-  }
-
-  if (Intersection inter = world.Intersect(r); inter) {
-    if (auto ret = inter.p_mat->scatter(r, inter); ret) {
-      auto [attenuation, scattered] = ret.value();
-      return attenuation * cast_ray(scattered, world, depth - 1);
-    } else {
-      return {0, 0, 0};
-    }
-  } else {
-    Vec3d u_dir = normalize(r.direction());
-    double t = 0.5 * (u_dir.y() + 1.);
-    return (1 - t) * Vec3d{1, 1, 1} + t * Vec3d{0.5, 0.7, 1.0};
-  }
+Vec3d cast_ray(const Ray &r, const World &world, int depth);
+World random_scene();
 }
 
-} // Tracer
-
 int main() {
+
+  constexpr int max_depth = 50;
+  constexpr int samples_per_pixel = 500;
 
   // Image
   constexpr int width = 1960;
   constexpr int height = 1080;
   constexpr int channel = 4;
-  [[maybe_unused]] constexpr double aspect_ratio = static_cast<double>(width) / height;
-  constexpr double focal_length = 600;
+  constexpr double aspect_ratio = static_cast<double>(width) / height;
 
   std::string filename = "image.png";
   std::vector<char> data(width * width * channel);
 
 
-  // Material
-  auto m_gouraud = std::make_shared<Tracer::Lambertian>(Tracer::Vec3d{0.8, 0.8, 0.0});
-  auto m_center = std::make_shared<Tracer::Lambertian>(Tracer::Vec3d{0.1, 0.2, 0.5});
-  auto m_left = std::make_shared<Tracer::Dielectric>(1.5);
-  auto m_right = std::make_shared<Tracer::Metal>(Tracer::Vec3d{0.8, 0.6, 0.2}, 0.0);
-
   // World
-  Tracer::World world;
+  Tracer::World world = Tracer::random_scene();
 
-  world.push(std::make_shared<Tracer::Sphere>(Tracer::Vec3d{0., -100.5, -1}, 100., m_gouraud));
-  world.push(std::make_shared<Tracer::Sphere>(Tracer::Vec3d{0, 0, -1}, 0.5, m_center));
-  world.push(std::make_shared<Tracer::Sphere>(Tracer::Vec3d{-1, 0, -1}, 0.5, m_left));
-  world.push(std::make_shared<Tracer::Sphere>(Tracer::Vec3d{-1, 0, -1}, -0.45, m_left));
-  world.push(std::make_shared<Tracer::Sphere>(Tracer::Vec3d{1, 0, -1}, 0.5, m_right));
 
   // Camera
-  Tracer::Vec3d lookfrom{3,3,2};
-  Tracer::Vec3d lookat{0,0,-1};
-  Tracer::Vec3d vup{0,1,0};
-  auto dist_to_focus = (lookfrom - lookat).length();
-  auto aperture = 2.0;
+  Tracer::Vec3d lookfrom{13, 2, 3};
+  Tracer::Vec3d lookat{0, 0, 0};
+  Tracer::Vec3d vup{0, 1, 0};
+  auto dist_to_focus = 10.0;
+  auto aperture = 0.1;
   double fov = 20.;
   fov = Tracer::deg2rad(fov);
   Tracer::Camera
       camera{lookfrom, lookat, vup, fov, aspect_ratio, aperture, dist_to_focus};
 
   // Render loop
-  constexpr int max_depth = 50;
-  constexpr int samples_per_pixel = 100;
   for (int j = 0; j < height; ++j) {
     for (int i = 0; i < width; ++i) {
       Tracer::Color3 col;
@@ -90,4 +60,80 @@ int main() {
   stbi_write_png(filename.c_str(), width, height, channel, data.data(), 0);
 }
 
+namespace Tracer {
+Vec3d cast_ray(const Ray &r, const World &world, int depth) {
+  if (depth <= 0) {
+    return {0, 0, 0};
+  }
 
+  if (Intersection inter = world.Intersect(r); inter) {
+    if (auto ret = inter.p_mat->scatter(r, inter); ret) {
+      auto [attenuation, scattered] = ret.value();
+      return attenuation * cast_ray(scattered, world, depth - 1);
+    } else {
+      return {0, 0, 0};
+    }
+  } else {
+    Vec3d u_dir = normalize(r.direction());
+    double t = 0.5 * (u_dir.y() + 1.);
+    return (1 - t) * Vec3d{1, 1, 1} + t * Vec3d{0.5, 0.7, 1.0};
+  }
+}
+
+World random_scene() {
+  World world;
+
+  auto gouraud_material = std::make_shared<Lambertian>(Vec3d{0.5, 0.5, 0.5});
+  world.push(std::make_shared<Sphere>(Vec3d{0, -1000, 0}, 1000, gouraud_material));
+
+  for (int a = -11; a < 11; ++a) {
+    for (int b = -11; b < 11; ++b) {
+      auto choose_mat = generate_random_double();
+      Vec3d center{a + 0.9 * generate_random_double(), 0.2, b + 0.9 * generate_random_double()};
+
+      if ((center - Vec3d{4, 0.2, 0}).length() > 0.9) {
+        std::shared_ptr<Material> sphere_material;
+
+        if (choose_mat < 0.8) {
+          // diffuse
+          auto color_random = [&]() -> Vec3d {
+            return {generate_random_double(), generate_random_double(), generate_random_double()};
+          };
+          auto albedo = color_random() * color_random();
+          sphere_material = std::make_shared<Lambertian>(albedo);
+          world.push(std::make_shared<Sphere>(center, 0.2, sphere_material));
+        } else if (choose_mat < 0.95) {
+          // metal
+          auto color_random = [&](double min, double max) -> Vec3d {
+            return {
+                generate_random_double(min, max),
+                generate_random_double(min, max),
+                generate_random_double(min, max)
+            };
+          };
+          auto albedo = color_random(0.5, 1);
+          auto fuzz = generate_random_double(0, 0.5);
+          sphere_material = std::make_shared<Metal>(albedo, fuzz);
+          world.push(std::make_shared<Sphere>(center, 0.2, sphere_material));
+        } else {
+          // glass
+          sphere_material = std::make_shared<Dielectric>(1.5);
+          world.push(std::make_shared<Sphere>(center, 0.2, sphere_material));
+      }
+    }
+  }
+}
+
+  auto material1 = std::make_shared<Dielectric>(1.5);
+  world.push(std::make_shared<Sphere>(Vec3d{0,1,0}, 1, material1));
+
+  auto material2 = std::make_shared<Lambertian>(Vec3d{0.4, 0.2, 0.1});
+  world.push(std::make_shared<Sphere>(Vec3d{-4,1,0}, 1, material2));
+
+  auto material3 = std::make_shared<Metal>(Vec3d{0.7, 0.6, 0.6}, 0.0);
+  world.push(std::make_shared<Sphere>(Vec3d{4,1,0}, 1, material3));
+
+  return world;
+}
+
+} // Tracer
