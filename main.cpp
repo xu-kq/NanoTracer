@@ -11,15 +11,15 @@ World random_scene();
 int main() {
 
   constexpr int max_depth = 50;
-  constexpr int samples_per_pixel = 500;
+  constexpr int samples_per_pixel = 50;
 
   // Image
-  constexpr int width = 1960;
-  constexpr int height = 1080;
+  constexpr int width = 800;
+  constexpr int height = 600;
   constexpr int channel = 4;
   constexpr double aspect_ratio = static_cast<double>(width) / height;
 
-  std::string filename = "image.png";
+  std::string filename = "../image/default_800x600_50spp.png";
   std::vector<char> data(width * width * channel);
 
 
