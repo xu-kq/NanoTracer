@@ -6,11 +6,13 @@
 #include <limits>
 #include <memory>
 
+#include <AABB/AABB.h>
 #include <Ray/Ray.h>
 
 namespace Tracer {
 
 class Material;
+
 struct Intersection {
 public:
   Intersection() :
@@ -34,11 +36,13 @@ public:
   Vec3d normal;
   std::shared_ptr<Material> p_mat;
   bool front_face;
+  double u, v;
 };
 
 class Shape {
 public:
-  [[nodiscard]] virtual Intersection Intersect(const Ray &ray) const = 0;
+  virtual Intersection Intersect(const Ray &ray) const = 0;
+  virtual AABB getAABB(double time0, double time1) const = 0;
 };
 
 } // Tracer

@@ -6,6 +6,8 @@
 // public common headers
 #include <algorithm>
 #include <array>
+#include <chrono>
+#include <functional>
 #include <iostream>
 #include <iomanip>
 #include <map>
@@ -20,6 +22,7 @@
 #include <utility>
 #include <vector>
 
+#include <BVH/BVH.h>
 #include <Camera/Camera.h>
 #include <stb_image/stb_image_write.h>
 #include <Material/Dielectric.h>
@@ -29,11 +32,12 @@
 #include <Shape/MovingSphere.h>
 #include <Shape/Sphere.h>
 #include <Shape/World.h>
-
+#include <Texture/Texture.h>
+#include <Texture/CheckerTexture.h>
 namespace Tracer {
 
 // constants
-constexpr double pi{3.14159265358979329l};
+extern const double pi;
 
 // utility function
 inline Color3 gamma_correction(const Vec3<double> &pixel_color) {
@@ -54,6 +58,7 @@ inline Color3 gamma_correction(const Vec3<double> &pixel_color) {
 
 inline double deg2rad(double degrees) { return degrees * pi / 180.; }
 
+int generate_random_int(int min, int max);
 double generate_random_double();
 double generate_random_double(double min, double max);
 Vec3d random_vec3d_in_unit_square();

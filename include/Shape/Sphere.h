@@ -7,6 +7,7 @@
 
 namespace Tracer {
 class Material;
+extern const double pi;
 class Sphere : public Shape {
 public:
   Sphere() = default;
@@ -15,7 +16,19 @@ public:
       radius{radius},
       p_mat{std::move(p_mat)} {}
 
-  [[nodiscard]] Intersection Intersect(const Ray &ray) const override;
+  Intersection Intersect(const Ray &ray) const override;
+  AABB getAABB(double time0, double time1) const override;
+
+private:
+  static void get_sphere_uv(const Vec3d &p, double &u, double &v) {
+
+    auto theta = std::acos(-p.y());
+    auto phi = std::atan2(-p.z(), p.x()) + pi;
+
+    u = phi / (2 * pi);
+    v = theta / pi;
+  }
+
 private:
   Vec3d center{};
   double radius{};

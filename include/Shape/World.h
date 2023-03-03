@@ -11,12 +11,20 @@ namespace Tracer {
 class World : public Shape {
 public:
   World() = default;
-  [[maybe_unused]] explicit World(const std::vector<std::shared_ptr<Shape>> &spheres) : spheres{spheres} {}
+  [[maybe_unused]] explicit World(const std::vector<std::shared_ptr<Shape>> &shapes) : shapes{shapes} {}
 
   [[nodiscard]] Intersection Intersect(const Ray &ray) const override;
-  void push(std::shared_ptr<Shape> ps) { spheres.push_back(ps); }
+  AABB getAABB(double time0, double time1) const override;
+
+  void push(std::shared_ptr<Shape> ps) { shapes.push_back(ps); }
+  std::size_t size() const {
+    return shapes.size();
+  }
+  const auto& objects() const {
+    return shapes;
+  }
 private:
-  std::vector<std::shared_ptr<Shape>> spheres;
+  std::vector<std::shared_ptr<Shape>> shapes;
 };
 
 } // Tracer

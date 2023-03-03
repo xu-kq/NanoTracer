@@ -5,7 +5,14 @@
 #include "utility/utility.h"
 
 namespace Tracer {
+constexpr double pi{3.14159265358979329l};
 
+int generate_random_int(int min, int max) {
+  static std::random_device seed;
+  static std::mt19937_64 engine(seed());
+  static std::uniform_int_distribution uniform_dist(min, max);
+  return uniform_dist(engine);
+}
 double generate_random_double()  {
   static std::random_device seed;
   static std::mt19937_64 engine(seed());

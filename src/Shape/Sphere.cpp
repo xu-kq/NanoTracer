@@ -33,8 +33,17 @@ Intersection Sphere::Intersect(const Ray &ray) const {
 
     Vec3d outward_normal = (inter.coords - center) / radius;
     inter.set_face_normal(ray, outward_normal);
+    get_sphere_uv(outward_normal, inter.u, inter.v);
 	}
   }
 	return inter;
+}
+
+AABB Sphere::getAABB(double time0, double time1) const {
+  auto ret = AABB{
+      center - Vec3d{radius, radius, radius},
+      center + Vec3d{radius, radius, radius}
+  };
+  return ret;
 }
 } // Tracer

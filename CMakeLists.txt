@@ -5,7 +5,7 @@ project(PathTracer LANGUAGES CXX
         HOMEPAGE_URL "https://github.com/xu-kq"
         )
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -27,12 +27,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE}
 # Main Executable
 add_executable(tracer main.cpp)
 
-add_subdirectory(src bin)
+add_subdirectory(src)
 
 target_include_directories(tracer PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(tracer
         PRIVATE
-        stb_image
+        AABB
+        BVH
+        Camera
+        Material
+        Ray
         Shape
+        stb_image
+        Texture
         utility
         )

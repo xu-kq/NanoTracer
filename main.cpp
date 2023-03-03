@@ -5,12 +5,11 @@
 #include <utility/utility.h>
 
 namespace Tracer {
-Vec3d cast_ray(const Ray &r, const World &world, int depth);
+Vec3d cast_ray(const Ray &r, const Shape &shape, int depth);
 World random_scene();
 }
 
 int main() {
-
   constexpr int max_depth = 50;
   constexpr int samples_per_pixel = 50;
 
@@ -21,13 +20,32 @@ int main() {
   constexpr double aspect_ratio = static_cast<double>(width) / height;
 
 //  std::string filename = "../../image/Default.png";
-  std::string filename = "../../image/MotionBlur_800x600_50spp.png";
+  std::string filename = "../../image/Texture_800x600_50spp.png";
   std::vector<char> data(width * width * channel);
 
 
   // World
   Tracer::World world = Tracer::random_scene();
+  std::cout << "The world contains " << world.objects().size() << " objects.\n" << std::endl;
 
+  Tracer::BVH root;
+  {
+    std::cout << "BVH tree is building... ";
+    using namespace std::literals;
+    const std::chrono::time_point<std::chrono::system_clock> tic =
+        std::chrono::system_clock::now();
+
+    root = Tracer::BVH(world, 0, 1);
+
+    const std::chrono::time_point<std::chrono::system_clock> toc =
+        std::chrono::system_clock::now();
+    std::cout << "The height is " << root.height << " , "
+              << "contains " << Tracer::BVH::sz << " objects. " << std::endl;
+
+    std::cout
+        << "took\n"
+        << (toc - tic) / 1ms << "ms\n" << std::endl;  // milliseconds accordingly}
+  }
 
   // Camera
   Tracer::Vec3d lookfrom{13, 2, 3};
@@ -41,29 +59,47 @@ int main() {
       camera{lookfrom, lookat, vup, fov, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0};
 
   // Render loop
-  for (int j = 0; j < height; ++j) {
-    for (int i = 0; i < width; ++i) {
-      Tracer::Color3 col;
-      for (int sp = 0; sp < samples_per_pixel; ++sp) {
-        double u = (i + Tracer::generate_random_double()) / width;
-        double v = (j + Tracer::generate_random_double()) / height;
-        Tracer::Ray ray = camera.gen_ray(u, v);
-        col += gamma_correction(Tracer::cast_ray(ray, world, max_depth));
-      }
-      col /= samples_per_pixel;
+  {
+    std::cout << "Rendering... ";
+    using namespace std::literals;
+    const std::chrono::time_point<std::chrono::system_clock> tic =
+        std::chrono::system_clock::now();
 
-      data[j * width * channel + i * channel + 0] = static_cast<char>(col.x());
-      data[j * width * channel + i * channel + 1] = static_cast<char>(col.y());
-      data[j * width * channel + i * channel + 2] = static_cast<char>(col.z());
-      data[j * width * channel + i * channel + 3] = static_cast<char>(255);
+    {
+      for (int j = 0; j < height; ++j) {
+        for (int i = 0; i < width; ++i) {
+          Tracer::Color3 col;
+          for (int sp = 0; sp < samples_per_pixel; ++sp) {
+            double u = (i + Tracer::generate_random_double()) / width;
+            double v = (j + Tracer::generate_random_double()) / height;
+            Tracer::Ray ray = camera.gen_ray(u, v);
+            col += gamma_correction(Tracer::cast_ray(ray, root, max_depth));
+          }
+          col /= samples_per_pixel;
+
+          data[j * width * channel + i * channel + 0] = static_cast<char>(col.x());
+          data[j * width * channel + i * channel + 1] = static_cast<char>(col.y());
+          data[j * width * channel + i * channel + 2] = static_cast<char>(col.z());
+          data[j * width * channel + i * channel + 3] = static_cast<char>(255);
+        }
+      }
     }
+
+    const std::chrono::time_point<std::chrono::system_clock> toc =
+        std::chrono::system_clock::now();
+    std::cout
+        << "took\n"
+        << (toc - tic) / 1s << "s\n";  // seconds accordingly
   }
+
   stbi_flip_vertically_on_write(true);
   stbi_write_png(filename.c_str(), width, height, channel, data.data(), 0);
+  return 0;
+
 }
 
 namespace Tracer {
-Vec3d cast_ray(const Ray &r, const World &world, int depth) {
+Vec3d cast_ray(const Ray &r, const Shape &world, int depth) {
   if (depth <= 0) {
     return {0, 0, 0};
   }
@@ -85,8 +121,10 @@ Vec3d cast_ray(const Ray &r, const World &world, int depth) {
 World random_scene() {
   World world;
 
-  auto gouraud_material = std::make_shared<Lambertian>(Vec3d{0.5, 0.5, 0.5});
-  world.push(std::make_shared<Sphere>(Vec3d{0, -1000, 0}, 1000, gouraud_material));
+//  auto gouraud_material = std::make_shared<Lambertian>(Vec3d{0.5, 0.5, 0.5});
+//  world.push(std::make_shared<Sphere>(Vec3d{0, -1000, 0}, 1000, gouraud_material));
+  auto checker = std::make_shared<CheckerTexture>(Vec3d{0.2, 0.3, 0.1}, Vec3d{0.9, 0.9, 0.9});
+  world.push(std::make_shared<Sphere>(Vec3d{0, -1000, 0}, 1000, std::make_shared<Lambertian>(checker)));
 
   for (int a = -11; a < 11; ++a) {
     for (int b = -11; b < 11; ++b) {
@@ -122,19 +160,19 @@ World random_scene() {
           // glass
           sphere_material = std::make_shared<Dielectric>(1.5);
           world.push(std::make_shared<Sphere>(center, 0.2, sphere_material));
+        }
       }
     }
   }
-}
 
   auto material1 = std::make_shared<Dielectric>(1.5);
-  world.push(std::make_shared<Sphere>(Vec3d{0,1,0}, 1, material1));
+  world.push(std::make_shared<Sphere>(Vec3d{0, 1, 0}, 1, material1));
 
   auto material2 = std::make_shared<Lambertian>(Vec3d{0.4, 0.2, 0.1});
-  world.push(std::make_shared<Sphere>(Vec3d{-4,1,0}, 1, material2));
+  world.push(std::make_shared<Sphere>(Vec3d{-4, 1, 0}, 1, material2));
 
   auto material3 = std::make_shared<Metal>(Vec3d{0.7, 0.6, 0.6}, 0.0);
-  world.push(std::make_shared<Sphere>(Vec3d{4,1,0}, 1, material3));
+  world.push(std::make_shared<Sphere>(Vec3d{4, 1, 0}, 1, material3));
 
   return world;
 }

@@ -17,6 +17,7 @@ public:
       : center0(cen0), center1(cen1), time0(_time0), time1(_time1), radius(r), pMat(pm) {}
 
   Intersection Intersect(const Ray &ray) const override;
+  AABB getAABB(double _time0, double _time1) const override;
   Vec3d center(double time) const;
 
 private:
