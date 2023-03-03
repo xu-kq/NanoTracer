@@ -10,7 +10,7 @@ class Material;
 class Sphere : public Shape {
 public:
   Sphere() = default;
-  Sphere(const Vec3d &center, float radius, std::shared_ptr<Material> p_mat) :
+  Sphere(const Vec3d &center, double radius, std::shared_ptr<Material> p_mat) :
       center{center},
       radius{radius},
       p_mat{std::move(p_mat)} {}

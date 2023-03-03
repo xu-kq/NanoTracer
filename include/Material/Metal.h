@@ -17,7 +17,7 @@ public:
 
   virtual std::optional<std::tuple<Vec3d, Ray>> scatter(const Ray &ri, const Intersection &inter) const override {
     Vec3d reflected = reflect(normalize(ri.direction()), inter.normal);
-    Ray scattered = {inter.coords, reflected + fuzzy * random_vec3d_in_unit_square()};
+    Ray scattered = {inter.coords, reflected + fuzzy * random_vec3d_in_unit_square(), ri.time()};
     Vec3d attenuation = albedo;
     if (dot(scattered.direction(), inter.normal) > 0) {
       return std::tuple{attenuation, scattered};

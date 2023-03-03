@@ -8,6 +8,7 @@
 namespace Tracer {
 
 Vec3d random_vec3d_in_unit_square();
+double generate_random_double(double min, double max);
 
 class Camera {
 public:
@@ -17,9 +18,14 @@ public:
          const double vfov,
          const double aspect_ratio,
          double aperture,
-         double focus_dist)
+         double focus_dist,
+         double _time0 = 0,
+         double _time1 = 0
+  )
       : origin{lookfrom},
-        lens_radius{aperture / 2} {
+        lens_radius{aperture / 2},
+        time0{_time0},
+        time1{_time1} {
     double viewport_height = 2 * std::tan(vfov / 2);
     double viewport_width = aspect_ratio * viewport_height;
 
@@ -38,7 +44,8 @@ public:
 
     return {
         origin + offset,
-        lower_left_corner + s * horizontal + t * vertical - origin - offset
+        lower_left_corner + s * horizontal + t * vertical - origin - offset,
+        generate_random_double(time0, time1)
     };
   }
 private:
@@ -51,6 +58,7 @@ private:
   Vec3d v;
   Vec3d w;
   double lens_radius;
+  double time0, time1;
 };
 
 } // Tracer

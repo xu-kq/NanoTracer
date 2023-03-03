@@ -3,3 +3,5 @@
 
 # CMake Outputs Files
 /build/
+/bin/
+/lib/

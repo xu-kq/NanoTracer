@@ -26,6 +26,7 @@
 #include <Material/Lambertian.h>
 #include <Material/Metal.h>
 #include <Ray/Ray.h>
+#include <Shape/MovingSphere.h>
 #include <Shape/Sphere.h>
 #include <Shape/World.h>
 

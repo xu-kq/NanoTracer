@@ -8,9 +8,9 @@ namespace Tracer {
 Intersection World::Intersect(const Ray &ray) const {
   Intersection ret;
   for(const auto& sphere : spheres) {
-	if(Intersection inter = sphere->Intersect(ray); inter) {
-		ret =  inter < ret ? inter : ret;
-	}
+    if (Intersection inter = sphere->Intersect(ray); inter) {
+      ret = inter < ret ? inter : ret;
+    }
   }
   return ret;
 }

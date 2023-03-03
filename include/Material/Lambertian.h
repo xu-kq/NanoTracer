@@ -20,7 +20,7 @@ public:
     if (scatter_direction.near_zero()) {
       scatter_direction = inter.normal;
     }
-    Ray scattered = {inter.coords, scatter_direction};
+    Ray scattered = {inter.coords, scatter_direction, ri.time()};
     Vec3d attenuation = albedo;
     return std::tuple{attenuation, scattered};
   }

@@ -3,6 +3,7 @@
 //
 
 #include <utility/utility.h>
+
 namespace Tracer {
 Vec3d cast_ray(const Ray &r, const World &world, int depth);
 World random_scene();
@@ -19,7 +20,8 @@ int main() {
   constexpr int channel = 4;
   constexpr double aspect_ratio = static_cast<double>(width) / height;
 
-  std::string filename = "../image/default_800x600_50spp.png";
+//  std::string filename = "../../image/Default.png";
+  std::string filename = "../../image/MotionBlur_800x600_50spp.png";
   std::vector<char> data(width * width * channel);
 
 
@@ -36,7 +38,7 @@ int main() {
   double fov = 20.;
   fov = Tracer::deg2rad(fov);
   Tracer::Camera
-      camera{lookfrom, lookat, vup, fov, aspect_ratio, aperture, dist_to_focus};
+      camera{lookfrom, lookat, vup, fov, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0};
 
   // Render loop
   for (int j = 0; j < height; ++j) {
@@ -101,7 +103,8 @@ World random_scene() {
           };
           auto albedo = color_random() * color_random();
           sphere_material = std::make_shared<Lambertian>(albedo);
-          world.push(std::make_shared<Sphere>(center, 0.2, sphere_material));
+          auto center2 = center + Vec3d{0., generate_random_double(0, .5), 0.};
+          world.push(std::make_shared<MovingSphere>(center, center2, 0.0, 1.0, 0.2, sphere_material));
         } else if (choose_mat < 0.95) {
           // metal
           auto color_random = [&](double min, double max) -> Vec3d {

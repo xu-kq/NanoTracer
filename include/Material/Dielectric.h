@@ -31,7 +31,7 @@ public:
       direction = refract(unit_direction, inter.normal, refraction_ratio);
     }
 
-    Ray scattered = Ray(inter.coords, direction);
+    Ray scattered = Ray(inter.coords, direction, ri.time());
     Vec3d attenuation{1.0, 1.0, 1.0};
     return std::tuple{attenuation, scattered};
   }
