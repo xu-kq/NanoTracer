@@ -14,13 +14,13 @@ int main() {
   constexpr int samples_per_pixel = 50;
 
   // Image
-  constexpr int width = 800;
-  constexpr int height = 600;
+  constexpr int width = 400;
+  constexpr int height = 225;
   constexpr int channel = 4;
   constexpr double aspect_ratio = static_cast<double>(width) / height;
 
 //  std::string filename = "../../image/Default.png";
-  std::string filename = "../../image/Texture_800x600_50spp.png";
+  std::string filename = "../../image/default.png";
   std::vector<char> data(width * width * channel);
 
 
@@ -39,8 +39,8 @@ int main() {
 
     const std::chrono::time_point<std::chrono::system_clock> toc =
         std::chrono::system_clock::now();
-    std::cout << "The height is " << root.height << " , "
-              << "contains " << Tracer::BVH::sz << " objects. " << std::endl;
+    std::cout << "The tree's height is " << root.height << " , "
+              << "contains " << Tracer::BVH::sz << " objects. ";
 
     std::cout
         << "took\n"
